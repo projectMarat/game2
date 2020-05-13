@@ -16,7 +16,7 @@ public class MapTiled {
     Character character;
 
     public MapTiled(){
-        character = new Character();
+        character = new Character(camera);
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         tiledMap = new TmxMapLoader().load("maps/newMap.tmx");
