@@ -16,18 +16,19 @@ public class Game extends ApplicationAdapter {
 	MapTiled mapTiled;
 	@Override
 	public void create () {
-//		img = new Texture("Background/Yellow.png");
-//		sprite = new Sprite(img);
-//		batch = new SpriteBatch();
-//		mapTiled = new MapTiled();
+		Gdx.app.log("resolution1111111111111111111111111111111111111111",Gdx.graphics.getWidth()+" x "+ Gdx.graphics.getHeight());
+		img = new Texture("Background/Yellow.png");
+		sprite = new Sprite(img);
+		batch = new SpriteBatch();
+		mapTiled = new MapTiled();
 	}
 
 	@Override
 	public void render () {
-//		batch.begin();
-//		spriteDraw(sprite);
-//		batch.end();
-//		mapTiled.render();
+		batch.begin();
+		spriteDraw(sprite);
+		batch.end();
+		mapTiled.render();
 	}
 	
 	@Override

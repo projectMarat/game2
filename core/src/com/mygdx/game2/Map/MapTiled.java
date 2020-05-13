@@ -17,7 +17,6 @@ public class MapTiled {
 
     public MapTiled(){
         character = new Character();
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         tiledMap = new TmxMapLoader().load("maps/newMap.tmx");
@@ -31,11 +30,11 @@ public class MapTiled {
 
     public void render(){
         float x = Gdx.input.getDeltaX();
-        camera.position.add(-x*camera.zoom, 0,0);
+//        camera.position.add(-x*camera.zoom, 0,0);
         camera.update();
         renderer.setView(camera);
 
         renderer.render();
-//        character.render();
+        character.render();
     }
 }

@@ -1,5 +1,6 @@
 package com.mygdx.game2.Player;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,38 +9,49 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Character {
-    Animation<TextureRegion> walkAnimation;
+    private static final int FRAME_COLS = 11, FRAME_ROWS = 1;
+
+    // Objects used
+    Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
     Texture walkSheet;
     SpriteBatch spriteBatch;
 
+
     float stateTime;
-    public Character(){
-        walkSheet = new Texture(Gdx.files.internal("idle (32x32).png"));
 
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / 11, walkSheet.getHeight());
 
-        TextureRegion[] walkFrames = new TextureRegion[1];
+    public Character() {
+        walkSheet = new Texture("Main Characters/Mask Dude/Idle (32x32).png");
+
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
+                walkSheet.getWidth() / FRAME_COLS,
+                walkSheet.getHeight() / FRAME_ROWS);
+
+        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
-        for (int i = 0; i < walkFrames.length; i++) {
-            walkFrames[index++] = tmp[i][0];
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
         }
 
         walkAnimation = new Animation<TextureRegion>(0.025f, walkFrames);
-
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
     }
-    public void render() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear screen
-        stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
 
-        // Get current frame of animation for the current stateTime
+    public void render() {
+
+        stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
         spriteBatch.begin();
-        spriteBatch.draw(currentFrame, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2); // Draw current frame at (50, 50)
+        spriteBatch.draw(currentFrame, (float) (Gdx.graphics.getWidth()/10), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
         spriteBatch.end();
+
     }
-    public void dispose() { // SpriteBatches and Textures must always be disposed
+
+
+    public void dispose() {
         spriteBatch.dispose();
         walkSheet.dispose();
     }
