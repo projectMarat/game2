@@ -19,7 +19,7 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 
 public class Character {
-    int cnt;
+    int cnt,cnt1,x,y;
     TiledMap tiledMap;
     Animation<TextureRegion> idleAnimation;
     Animation<TextureRegion> moveAnimation;
@@ -33,7 +33,8 @@ public class Character {
 
 
     public Character(OrthographicCamera cam, TiledMap tM) {
-        cnt = 10;
+        cnt = 0;
+        cnt1 = 0;
         shouldBeLefted = false;
         this.tiledMap = tM;
         this.camera = cam;
@@ -75,36 +76,57 @@ public class Character {
 
     public void render() {
         position.set(camera.position.x-Gdx.graphics.getWidth()/2,camera.position.y-Gdx.graphics.getHeight()/2);
-        int x = Gdx.input.getX();
-        int y = Gdx.input.getY();
+        if(Gdx.input.justTouched()){
+            x = Gdx.input.getX();
+            y = Gdx.input.getY();
+        }
 //        position detection
 //        falling
         if((position.x<-826-32/2 || position.x>1466 || position.y!=0) && cnt<=0){
-            TextureRegion[][] currentFrameFall = TextureRegion.split(new Texture("Main Characters/Mask Dude/Fall (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
+            TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Fall (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
+            TextureRegion currentFrameFall = currentFrame[0][0];
+            int [] a = new int[10];
+            for (int i = 0; i < 10; i++) a[i]=i;
+            for (int i:a) {
+                if(position.y==i) {
+                    spriteBatch.begin();
+                    spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+                    position.y-=i;
+                    spriteBatch.end();
+                    break;
+                }
+            }
             spriteBatch.begin();
-            spriteBatch.draw(currentFrameFall[0][0], (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+            if(shouldBeLefted)currentFrameFall.flip(true,false);
+            spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
             spriteBatch.end();
+
             camera.position.y-=10;
             if(position.y<-200){
-                camera.position.y = 540;
-                camera.position.x = 1078;
+                camera.position.y = Gdx.graphics.getHeight()/2;
+                camera.position.x = Gdx.graphics.getWidth()/2;
             }else if (Gdx.input.isTouched()){
-                if(sideOfTouch()){
+                if(sideOfTouch() && !shouldBeLefted){
                     shouldBeLefted = false;
                     camera.position.x += 4;
+                    if(currentFrameFall.isFlipX())
+                        currentFrameFall.flip(true,false);
                 }else {
                     shouldBeLefted = true;
                     camera.position.x -= 4;
+                    if(!currentFrameFall.isFlipX())
+                        currentFrameFall.flip(true,false);
                 }
+                spriteBatch.begin();
+                spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+                spriteBatch.end();
             }
 
-//            jumping
+//            jumping to right
 
-        }else if((cnt<=100 && cnt>0)|| (Gdx.input.justTouched() && x >= Gdx.graphics.getWidth()-Gdx.graphics.getWidth()/4 && y>=Gdx.graphics.getHeight()/2)){
-            TextureRegion[][] currentFrameJump = TextureRegion.split(new Texture("Main Characters/Mask Dude/Jump (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
-            spriteBatch.begin();
-            spriteBatch.draw(currentFrameJump[0][0], (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
-            spriteBatch.end();
+        }else if((cnt<=100 && cnt>0) || (Gdx.input.justTouched() && x >= Gdx.graphics.getWidth()-Gdx.graphics.getWidth()/4 && y>=Gdx.graphics.getHeight()/2)){
+            TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Jump (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
+            TextureRegion currentFrameJump = currentFrame[0][0];
             if(cnt == 0){
                 cnt = 15;
             }else{
@@ -112,14 +134,52 @@ public class Character {
             }
             camera.position.y+=cnt;
             if (Gdx.input.isTouched()){
-                if(sideOfTouch()){
-                    shouldBeLefted = false;
-                    camera.position.x += 4;
-                }else {
+                if(!sideOfTouch()){
                     shouldBeLefted = true;
                     camera.position.x -= 4;
+                    if(!currentFrameJump.isFlipX())
+                        currentFrameJump.flip(true,false);
+                }else {
+                    shouldBeLefted = false;
+                    camera.position.x += 4;
+                    if(currentFrameJump.isFlipX())
+                        currentFrameJump.flip(true,false);
                 }
             }
+            spriteBatch.begin();
+            if(shouldBeLefted && !currentFrameJump.isFlipX())currentFrameJump.flip(true,false);
+            spriteBatch.draw(currentFrameJump, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+            spriteBatch.end();
+        }
+
+//        jumping to left
+
+        else if((Gdx.input.justTouched() && x <= Gdx.graphics.getWidth()/4 && y>=Gdx.graphics.getHeight()/2)){
+            TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Jump (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
+            TextureRegion currentFrameJump = currentFrame[0][0];
+            if(cnt <= 0){
+                cnt = 15;
+            }else{
+                cnt-=1;
+            }
+            camera.position.y+=cnt;
+            if (Gdx.input.isTouched()){
+                if(!sideOfTouch()){
+                    shouldBeLefted = true;
+                    camera.position.x -= 4;
+                    if(!currentFrameJump.isFlipX())
+                        currentFrameJump.flip(true,false);
+                }else {
+                    shouldBeLefted = false;
+                    camera.position.x += 4;
+                    if(currentFrameJump.isFlipX())
+                        currentFrameJump.flip(true,false);
+                }
+            }
+            spriteBatch.begin();
+            if(shouldBeLefted && !currentFrameJump.isFlipX())currentFrameJump.flip(true,false);
+            spriteBatch.draw(currentFrameJump, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+            spriteBatch.end();
         }
 
 //        running
@@ -172,7 +232,7 @@ public class Character {
 
     }
     public boolean sideOfTouch(){
-        if(Gdx.input.getX()>Gdx.graphics.getWidth()/2) return true;
+        if(x>Gdx.graphics.getWidth()/2) return true;
         return false;
     }
 
