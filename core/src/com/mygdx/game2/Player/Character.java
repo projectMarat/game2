@@ -13,12 +13,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game2.Buttons.JumpButton;
+
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
 public class Character {
+    int cnt;
     TiledMap tiledMap;
     Animation<TextureRegion> idleAnimation;
     Animation<TextureRegion> moveAnimation;
@@ -29,10 +30,10 @@ public class Character {
     private Vector2 position;
     float stateTime;
     boolean shouldBeLefted;
-//    Array<Rectangle> platformRects;
+
 
     public Character(OrthographicCamera cam, TiledMap tM) {
-//        platformRects = new Array<Rectangle>();
+        cnt = 10;
         shouldBeLefted = false;
         this.tiledMap = tM;
         this.camera = cam;
@@ -74,10 +75,11 @@ public class Character {
 
     public void render() {
         position.set(camera.position.x-Gdx.graphics.getWidth()/2,camera.position.y-Gdx.graphics.getHeight()/2);
-
-        //position detection
-
-        if(position.x<-826-32/2 || position.x>1466 || position.y>540 || position.y<0){
+        int x = Gdx.input.getX();
+        int y = Gdx.input.getY();
+//        position detection
+//        falling
+        if((position.x<-826-32/2 || position.x>1466 || position.y!=0) && cnt<=0){
             TextureRegion[][] currentFrameFall = TextureRegion.split(new Texture("Main Characters/Mask Dude/Fall (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
             spriteBatch.begin();
             spriteBatch.draw(currentFrameFall[0][0], (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
@@ -95,9 +97,34 @@ public class Character {
                     camera.position.x -= 4;
                 }
             }
-        }else if(false){
 
-        } else if (Gdx.input.isTouched()){
+//            jumping
+
+        }else if((cnt<=100 && cnt>0)|| (Gdx.input.justTouched() && x >= Gdx.graphics.getWidth()-Gdx.graphics.getWidth()/4 && y>=Gdx.graphics.getHeight()/2)){
+            TextureRegion[][] currentFrameJump = TextureRegion.split(new Texture("Main Characters/Mask Dude/Jump (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
+            spriteBatch.begin();
+            spriteBatch.draw(currentFrameJump[0][0], (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
+            spriteBatch.end();
+            if(cnt == 0){
+                cnt = 15;
+            }else{
+                cnt-=1;
+            }
+            camera.position.y+=cnt;
+            if (Gdx.input.isTouched()){
+                if(sideOfTouch()){
+                    shouldBeLefted = false;
+                    camera.position.x += 4;
+                }else {
+                    shouldBeLefted = true;
+                    camera.position.x -= 4;
+                }
+            }
+        }
+
+//        running
+
+        else if (Gdx.input.isTouched()){
             stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrameRun = moveAnimation.getKeyFrame(stateTime, true);
 
@@ -119,7 +146,11 @@ public class Character {
             spriteBatch.draw(currentFrameRun, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
             spriteBatch.end();
             currentFrameRun.flip(false,false);
-        }else if(!Gdx.input.isTouched()){
+        }
+
+//        do nothing
+
+        else if(!Gdx.input.isTouched()){
 
             stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);

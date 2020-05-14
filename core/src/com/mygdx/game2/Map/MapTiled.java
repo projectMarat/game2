@@ -1,22 +1,28 @@
 package com.mygdx.game2.Map;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game2.Player.Character;
 
 
-public class MapTiled {
+public class MapTiled extends Game {
     TiledMap tiledMap;
     OrthographicCamera camera;
     TiledMapRenderer renderer;
     Character character;
+//    Stage stage;
+//    Viewport viewport;
 
     public MapTiled(){
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         tiledMap = new TmxMapLoader().load("maps/newMap.tmx");
@@ -27,16 +33,25 @@ public class MapTiled {
         camera.position.y = Gdx.graphics.getHeight()/2;
         camera.update();
 
+//        viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),camera);
+//        stage = new Stage(viewport);
+//        Gdx.input.setInputProcessor(stage);
+//        stage.addActor(new MapTiledActor(new Texture("Menu/Buttons/Next.png"),this));
+
         character = new Character(camera,tiledMap);
+
+
     }
 
+    @Override
+    public void create() {}
+
     public void render(){
-        float x = Gdx.input.getDeltaX();
-//        camera.position.add(-x*camera.zoom, 0,0);
         camera.update();
         renderer.setView(camera);
-
         renderer.render();
         character.render();
+//        stage.draw();
+//        stage.act(Gdx.graphics.getDeltaTime());
     }
 }
