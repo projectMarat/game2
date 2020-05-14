@@ -16,7 +16,7 @@ public class MapTiled {
     Character character;
 
     public MapTiled(){
-        character = new Character(camera);
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         tiledMap = new TmxMapLoader().load("maps/newMap.tmx");
@@ -26,6 +26,8 @@ public class MapTiled {
         camera.position.x = Gdx.graphics.getWidth()/2;
         camera.position.y = Gdx.graphics.getHeight()/2;
         camera.update();
+
+        character = new Character(camera,tiledMap);
     }
 
     public void render(){

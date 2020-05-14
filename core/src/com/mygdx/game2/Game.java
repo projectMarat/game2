@@ -16,7 +16,7 @@ public class Game extends ApplicationAdapter {
 	MapTiled mapTiled;
 	@Override
 	public void create () {
-		Gdx.app.log("resolution1111111111111111111111111111111111111111",Gdx.graphics.getWidth()+" x "+ Gdx.graphics.getHeight());
+		Gdx.app.log("resolution",Gdx.graphics.getWidth()+" x "+ Gdx.graphics.getHeight());
 		img = new Texture("Background/Yellow.png");
 		sprite = new Sprite(img);
 		batch = new SpriteBatch();
