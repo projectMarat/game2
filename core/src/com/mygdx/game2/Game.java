@@ -35,14 +35,18 @@ public class Game extends ApplicationAdapter {
 			batch.begin();
 			finishDraw(sprite1);
 			batch.end();
+			mapTiled.render();
 		}
 
 	}
 	
 	@Override
 	public void dispose () {
-		flag = false;
+//		flag = false;
 
+	}
+	public void win(){
+		flag = false;
 	}
 
 

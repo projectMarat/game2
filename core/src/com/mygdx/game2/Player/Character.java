@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game2.Game;
 import com.mygdx.game2.Map.MapTiled;
 
 
@@ -31,13 +32,15 @@ public class Character {
     MapTiled mapTiled;
     private Vector2 position;
     float stateTime;
-    boolean shouldBeLefted;
+    boolean shouldBeLefted,flag;
+    Game game;
 
-
-    public Character(OrthographicCamera cam, TiledMap tM, MapTiled mapTiled) {
+    public Character(OrthographicCamera cam, TiledMap tM, MapTiled mapTiled,Game game) {
+        flag = false;
         cnt = 0;
         cnt1 = 0;
         shouldBeLefted = false;
+        this.game = game;
         this.mapTiled = mapTiled;
         this.tiledMap = tM;
         this.camera = cam;
@@ -78,6 +81,9 @@ public class Character {
     }
 
     public void render() {
+        if(flag){
+
+        }else{
         position.set(camera.position.x-Gdx.graphics.getWidth()/2,camera.position.y-Gdx.graphics.getHeight()/2);
         if(Gdx.input.justTouched()){
             x = Gdx.input.getX();
@@ -86,18 +92,20 @@ public class Character {
 //        position detection
 //        falling
         if (metalPlank())cnt=20;
-        if((position.x<-826-32/2 || position.x>1466 || position.y!=0) && cnt<=0 && !(normalPlank()) && !(metalPlank())){
+        if((position.x<-Gdx.graphics.getWidth()/2.61-32/2 || position.x>Gdx.graphics.getWidth()/1.47 || position.y!=0) && cnt<=0 && !(normalPlank()) && !(metalPlank())){
             TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Fall (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
             TextureRegion currentFrameFall = currentFrame[0][0];
             int [] a = new int[10];
             for (int i = 0; i < 10; i++) a[i]=i;
             for (int i:a) {
                 if(position.y==i) {
+//                    System.out.println("KING CRIMSON");
+                    camera.position.y=540;
                     spriteBatch.begin();
+                    if(shouldBeLefted)currentFrameFall.flip(true,false);
                     spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
-                    camera.position.y-=i;
                     spriteBatch.end();
-                    break;
+                    return;
                 }
             }
             spriteBatch.begin();
@@ -106,9 +114,10 @@ public class Character {
             spriteBatch.end();
 
             camera.position.y-=10;
-            if(position.y<-200){
-                camera.position.y = Gdx.graphics.getHeight()/2;
-                camera.position.x = Gdx.graphics.getWidth()/2;
+            if(position.y<-300){
+//                gameOver();
+                camera.position.x=Gdx.graphics.getWidth()/2;
+                camera.position.y=Gdx.graphics.getHeight()/2;
             }else if (Gdx.input.isTouched()){
                 if(sideOfTouch() && !shouldBeLefted){
                     shouldBeLefted = false;
@@ -218,8 +227,8 @@ public class Character {
             stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
             if(position.y==365 && position.x>=-666 && position.x<=-648){
-                dispose();
-
+                game.win();
+//                dispose();
             }
 
 
@@ -233,12 +242,13 @@ public class Character {
 
         }
 
-        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(stateTime));
+        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(position));
 
 
 
 
 
+        }
     }
     public boolean sideOfTouch(){
         if(x>Gdx.graphics.getWidth()/2) return true;
@@ -274,7 +284,8 @@ public class Character {
         return position;
     }
     public boolean normalPlank(){
-        if((position.x<=-718+32/2 && position.x>=-754-32/2 && ((position.y<=70 && position.y>=60)||(position.y<=205 && position.y>=195)))||(position.x<=-618 && position.x>=-690 && ((position.y<=130 && position.y>=120)||(position.y<=365 && position.y>=355)))){
+        if((position.x<=-Gdx.graphics.getWidth()/3+32/2 && position.x>=-Gdx.graphics.getWidth()/2.86-32/2 && ((position.y<=Gdx.graphics.getHeight()/15.42 && position.y>=Gdx.graphics.getHeight()/18)||(position.y<=Gdx.graphics.getHeight()/5.14 && position.y>=Gdx.graphics.getHeight()/5.53)))||(position.x<=-Gdx.graphics.getWidth()/3.49 && position.x>=-Gdx.graphics.getWidth()/3.12 && ((position.y<=Gdx.graphics.getHeight()/8.3 && position.y>=Gdx.graphics.getHeight()/9)||(position.y<=Gdx.graphics.getHeight()/2.95 && position.y>=Gdx.graphics.getHeight()/3.04)))){
+            if(position.y==120)camera.position.y+=5;
             if(position.y==130)camera.position.y-=5;
             if(position.y==70)camera.position.y-=10;
             if(position.y==195)camera.position.y+=10;
@@ -285,12 +296,13 @@ public class Character {
         return false;
     }
     public boolean metalPlank(){
-        if(position.x<=-718+32/2 && position.x>=-754-32/2 && position.y<=275 && position.y>=265){
+        if(position.x<=-Gdx.graphics.getWidth()/3+32/2 && position.x>=-Gdx.graphics.getWidth()/2.85-32/2 && position.y<=275 && position.y>=265){
             return true;
         }
-
-
         return false;
+    }
+    public void gameOver(){
+        flag = true;
     }
 
 }

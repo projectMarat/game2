@@ -39,7 +39,7 @@ public class MapTiled extends Game {
 //        Gdx.input.setInputProcessor(stage);
 //        stage.addActor(new MapTiledActor(new Texture("Menu/Buttons/Next.png"),this));
 
-        character = new Character(camera,tiledMap,this);
+        character = new Character(camera,tiledMap,this,game);
 
 
     }
