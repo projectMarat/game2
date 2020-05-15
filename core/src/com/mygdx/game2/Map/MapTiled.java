@@ -21,8 +21,9 @@ public class MapTiled extends Game {
     Character character;
 //    Stage stage;
 //    Viewport viewport;
-
-    public MapTiled(){
+    com.mygdx.game2.Game game;
+    public MapTiled(com.mygdx.game2.Game game){
+        this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         tiledMap = new TmxMapLoader().load("maps/newMap.tmx");
@@ -38,7 +39,7 @@ public class MapTiled extends Game {
 //        Gdx.input.setInputProcessor(stage);
 //        stage.addActor(new MapTiledActor(new Texture("Menu/Buttons/Next.png"),this));
 
-        character = new Character(camera,tiledMap);
+        character = new Character(camera,tiledMap,this);
 
 
     }
@@ -53,5 +54,13 @@ public class MapTiled extends Game {
         character.render();
 //        stage.draw();
 //        stage.act(Gdx.graphics.getDeltaTime());
+    }
+    public void stop(){
+        game.dispose();
+        tiledMap.dispose();
+        dispose();
+    }
+    public void dispose(){
+
     }
 }

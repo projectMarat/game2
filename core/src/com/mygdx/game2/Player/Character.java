@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game2.Map.MapTiled;
 
 
 import java.lang.reflect.Array;
@@ -27,15 +28,17 @@ public class Character {
     Texture moveSheet;
     SpriteBatch spriteBatch;
     OrthographicCamera camera;
+    MapTiled mapTiled;
     private Vector2 position;
     float stateTime;
     boolean shouldBeLefted;
 
 
-    public Character(OrthographicCamera cam, TiledMap tM) {
+    public Character(OrthographicCamera cam, TiledMap tM, MapTiled mapTiled) {
         cnt = 0;
         cnt1 = 0;
         shouldBeLefted = false;
+        this.mapTiled = mapTiled;
         this.tiledMap = tM;
         this.camera = cam;
         position = new Vector2();
@@ -82,7 +85,8 @@ public class Character {
         }
 //        position detection
 //        falling
-        if((position.x<-826-32/2 || position.x>1466 || position.y!=0) && cnt<=0){
+        if (metalPlank())cnt=20;
+        if((position.x<-826-32/2 || position.x>1466 || position.y!=0) && cnt<=0 && !(normalPlank()) && !(metalPlank())){
             TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Fall (32x32).png"),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getWidth(),new Texture("Main Characters/Mask Dude/Fall (32x32).png").getHeight());
             TextureRegion currentFrameFall = currentFrame[0][0];
             int [] a = new int[10];
@@ -91,7 +95,7 @@ public class Character {
                 if(position.y==i) {
                     spriteBatch.begin();
                     spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
-                    position.y-=i;
+                    camera.position.y-=i;
                     spriteBatch.end();
                     break;
                 }
@@ -211,9 +215,14 @@ public class Character {
 //        do nothing
 
         else if(!Gdx.input.isTouched()){
-
             stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+            if(position.y==365 && position.x>=-666 && position.x<=-648){
+                dispose();
+
+            }
+
+
 
             if(shouldBeLefted && !currentFrame.isFlipX())currentFrame.flip(true,false);
             else if(!shouldBeLefted && currentFrame.isFlipX())currentFrame.flip(true,false);
@@ -239,9 +248,31 @@ public class Character {
     public void dispose() {
         spriteBatch.dispose();
         idleSheet.dispose();
+        moveSheet.dispose();
+        mapTiled.stop();
     }
     public Vector2 getPosition(){
 //        position.set(camera.position.x,camera.position.y);
         return position;
     }
+    public boolean normalPlank(){
+        if((position.x<=-718+32/2 && position.x>=-754-32/2 && ((position.y<=70 && position.y>=60)||(position.y<=205 && position.y>=195)))||(position.x<=-618 && position.x>=-690 && ((position.y<=130 && position.y>=120)||(position.y<=365 && position.y>=355)))){
+            if(position.y==130)camera.position.y-=5;
+            if(position.y==70)camera.position.y-=10;
+            if(position.y==195)camera.position.y+=10;
+            if(position.y==360)camera.position.y+=5;
+            return true;
+        }
+
+        return false;
+    }
+    public boolean metalPlank(){
+        if(position.x<=-718+32/2 && position.x>=-754-32/2 && position.y<=275 && position.y>=265){
+            return true;
+        }
+
+
+        return false;
+    }
+
 }
