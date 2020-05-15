@@ -233,7 +233,7 @@ public class Character {
 
         }
 
-        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa",position.toString());
+        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(stateTime));
 
 
 
@@ -246,6 +246,24 @@ public class Character {
     }
 
     public void dispose() {
+//        TextureRegion[][] currentFrame = TextureRegion.split(new Texture("Main Characters/Mask Dude/Double Jump (32x32).png"), new Texture("Main Characters/Mask Dude/Double Jump (32x32).png").getWidth() / 6, new Texture("Main Characters/Mask Dude/Double Jump (32x32).png").getHeight());
+//        TextureRegion[] curframe = new TextureRegion[6];
+//        int index = 0;
+//        for (int i = 0; i < 1; i++) {
+//            for (int j = 0; j < 6; j++) {
+//                curframe[index++] = currentFrame[i][j];
+//            }
+//        }
+//        Animation<TextureRegion> flyAnimation = new Animation<TextureRegion>(1f, curframe);
+//        spriteBatch.begin();
+//        stateTime = 0;
+//        while (stateTime < 10f){
+//            Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(stateTime));
+//            stateTime += Gdx.graphics.getDeltaTime()/2;
+//            TextureRegion currentFrameFly = flyAnimation.getKeyFrame(stateTime, true);
+//            spriteBatch.draw(currentFrameFly, (float) (Gdx.graphics.getWidth() / 5), (float) (Gdx.graphics.getHeight() / 4), (float) (Gdx.graphics.getWidth() / 18.7), (float) (Gdx.graphics.getHeight() / 9.4));
+//        }
+//        spriteBatch.end();
         spriteBatch.dispose();
         idleSheet.dispose();
         moveSheet.dispose();
