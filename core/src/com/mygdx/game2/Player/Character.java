@@ -99,13 +99,13 @@ public class Character {
             for (int i = 0; i < 10; i++) a[i]=i;
             for (int i:a) {
                 if(position.y==i) {
-//                    System.out.println("KING CRIMSON");
+                    System.out.println("KING CRIMSON");
                     camera.position.y=540;
                     spriteBatch.begin();
                     if(shouldBeLefted)currentFrameFall.flip(true,false);
                     spriteBatch.draw(currentFrameFall, (float) (Gdx.graphics.getWidth()/5), (float) (Gdx.graphics.getHeight()/4), (float) (Gdx.graphics.getWidth()/18.7), (float) (Gdx.graphics.getHeight()/9.4));
                     spriteBatch.end();
-                    return;
+                    continue;
                 }
             }
             spriteBatch.begin();
@@ -226,7 +226,7 @@ public class Character {
         else if(!Gdx.input.isTouched()){
             stateTime += Gdx.graphics.getDeltaTime();
             TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
-            if(position.y==365 && position.x>=-666 && position.x<=-648){
+            if(position.y==Gdx.graphics.getHeight()/2.96 && position.x<=-Gdx.graphics.getWidth()/3.49 && position.x>=-Gdx.graphics.getWidth()/3.12){
                 game.win();
 //                dispose();
             }
@@ -242,7 +242,7 @@ public class Character {
 
         }
 
-        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(position));
+        Gdx.app.log("aaaaaaaaaaaaaaaaaaaaaaaaaa", String.valueOf(Gdx.graphics.getHeight()/(float)(Gdx.graphics.getHeight()/65)));
 
 
 
@@ -285,11 +285,13 @@ public class Character {
     }
     public boolean normalPlank(){
         if((position.x<=-Gdx.graphics.getWidth()/3+32/2 && position.x>=-Gdx.graphics.getWidth()/2.86-32/2 && ((position.y<=Gdx.graphics.getHeight()/15.42 && position.y>=Gdx.graphics.getHeight()/18)||(position.y<=Gdx.graphics.getHeight()/5.14 && position.y>=Gdx.graphics.getHeight()/5.53)))||(position.x<=-Gdx.graphics.getWidth()/3.49 && position.x>=-Gdx.graphics.getWidth()/3.12 && ((position.y<=Gdx.graphics.getHeight()/8.3 && position.y>=Gdx.graphics.getHeight()/9)||(position.y<=Gdx.graphics.getHeight()/2.95 && position.y>=Gdx.graphics.getHeight()/3.04)))){
-            if(position.y==120)camera.position.y+=5;
-            if(position.y==130)camera.position.y-=5;
-            if(position.y==70)camera.position.y-=10;
-            if(position.y==195)camera.position.y+=10;
-            if(position.y==360)camera.position.y+=5;
+            if(position.y==Gdx.graphics.getHeight()/9)camera.position.y+=5;
+            if(position.y==Gdx.graphics.getHeight()/8.3)camera.position.y-=5;
+            if(position.y==Gdx.graphics.getHeight()/8)camera.position.y-=10;
+            if(position.y==Gdx.graphics.getHeight()/(Gdx.graphics.getHeight()/65))camera.position.y-=5;
+            if(position.y==Gdx.graphics.getHeight()/(Gdx.graphics.getHeight()/70))camera.position.y-=10;
+            if(position.y==Gdx.graphics.getHeight()/5.53)camera.position.y+=10;
+            if(position.y==Gdx.graphics.getHeight()/3)camera.position.y+=5;
             return true;
         }
 
