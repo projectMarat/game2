@@ -15,6 +15,7 @@ import com.mygdx.game2.Screens.PlayScreen;
 import com.mygdx.game2.Sprites.Enemies.Enemy;
 import com.mygdx.game2.Sprites.Enemies.Goomba;
 import com.mygdx.game2.Sprites.Enemies.Turtle;
+import com.mygdx.game2.Sprites.Mario;
 import com.mygdx.game2.Sprites.TileObjects.Brick;
 import com.mygdx.game2.Sprites.TileObjects.Coin;
 
@@ -22,32 +23,32 @@ import com.mygdx.game2.Sprites.TileObjects.Coin;
 public class B2WorldCreator {
     private Array<Goomba> goombas;
     private Array<Turtle> turtles;
-
-    public B2WorldCreator(PlayScreen screen){
-        World world = screen.getWorld();
+    Mario player;
+    public World world;
+    public BodyDef bdef;
+    public PolygonShape shape;
+    public Body body;
+    public FixtureDef fdef;
+    public B2WorldCreator(PlayScreen screen, Mario player){
+        this.player = player;
+        world = screen.getWorld();
         TiledMap map = screen.getMap();
         //create body and fixture variables
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body;
+        bdef = new BodyDef();
+        shape = new PolygonShape();
+        fdef = new FixtureDef();
+
 
         //create ground bodies/fixtures
         for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            try{
-                if(object.getName().equals("metalPlank")){
-
-                }
-            }catch (NullPointerException e){
-
-            }
 
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
 
-            body = world.createBody(bdef);
+            if (object.getName().equals("metalPlank"))continue;
 
+            body = world.createBody(bdef);
             shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
             fdef.shape = shape;
             body.createFixture(fdef);
@@ -101,4 +102,18 @@ public class B2WorldCreator {
         enemies.addAll(turtles);
         return enemies;
     }
+//    public BodyDef[] getMetalPlank(TiledMap map){
+//        ArrayList<BodyDef> bdefArray = new ArrayList<>();
+//        BodyDef bdef = new BodyDef();
+//        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+//            if(object.getName().equals("metalPlank")){
+//                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+//
+//                bdef.type = BodyDef.BodyType.StaticBody;
+//                bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+//                bdefArray.add(bdef);
+//            }
+//        }
+//        return (BodyDef[]) bdefArray.toArray();
+//    }
 }

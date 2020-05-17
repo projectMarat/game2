@@ -8,11 +8,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -59,6 +66,8 @@ public class PlayScreen implements Screen{
     private Array<Item> items;
     private LinkedBlockingQueue<ItemDef> itemsToSpawn;
 
+    BodyDef[] bodyDefs;
+
 
     public PlayScreen(MarioBros game){
         batch = new SpriteBatch();
@@ -86,11 +95,10 @@ public class PlayScreen implements Screen{
         world = new World(new Vector2(0, -10), true);
         //allows for debug lines of our box2d world.
         b2dr = new Box2DDebugRenderer();
-
-        creator = new B2WorldCreator(this);
-
-        //create mario in our game world
         player = new Mario(this);
+        creator = new B2WorldCreator(this,player);
+        //create mario in our game world
+
 
         world.setContactListener(new WorldContactListener());
 
@@ -177,6 +185,8 @@ public class PlayScreen implements Screen{
             }
         }
 
+
+
         for(Item item : items)
             item.update(dt);
 
@@ -189,6 +199,25 @@ public class PlayScreen implements Screen{
             gamecam.position.y = player.b2body.getPosition().y;
             if(gamecam.position.y < gamePort.getWorldHeight() / 2)
                 gamecam.position.y = gamePort.getWorldHeight() / 2;
+
+        }
+        World world = creator.world;
+        BodyDef bdef = creator.bdef;
+        Body body;
+        PolygonShape shape = creator.shape;
+        FixtureDef fdef = creator.fdef;
+        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+            if (object.getName().equals("metalPlank")){
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                bdef.type = BodyDef.BodyType.StaticBody;
+                bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+                if((player.b2body.getPosition().y-8)/ MarioBros.PPM>=(rect.y+rect.height)/ MarioBros.PPM)bdef.active=true;
+                else bdef.active=false;
+                body = world.createBody(bdef);
+                shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
+                fdef.shape = shape;
+                body.createFixture(fdef);
+            }
 
         }
 
@@ -224,9 +253,7 @@ public class PlayScreen implements Screen{
         update(delta);
 
         //render our game map
-        int layers[] = {1};
-        renderer.render(layers);
-
+        renderer.render();
         //renderer our Box2DDebugLines
         b2dr.render(world, gamecam.combined);
 
