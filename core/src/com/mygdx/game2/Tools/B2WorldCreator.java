@@ -33,13 +33,15 @@ public class B2WorldCreator {
         Body body;
 
         //create ground bodies/fixtures
-        for(MapObject object : map.getLayers().get(10).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-        }
-
         for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            try{
+                if(object.getName().equals("metalPlank")){
+
+                }
+            }catch (NullPointerException e){
+
+            }
 
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
