@@ -52,6 +52,7 @@ public class PlayScreen implements Screen {
     private TmxMapLoader maploader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
+    boolean finish;
 
     //Box2d variables
     private World world1;
@@ -69,12 +70,13 @@ public class PlayScreen implements Screen {
 
     BodyDef bdef;
     Body body[];
+    Body goldenPlank;
     PolygonShape shape;
     FixtureDef fdef;
 
 
     public PlayScreen(MarioBros game) {
-
+        finish = false;
         batch = new SpriteBatch();
 
 //        atlas = new TextureAtlas("Mario_and_Enemies.pack");
@@ -109,7 +111,6 @@ public class PlayScreen implements Screen {
         body = new Body[count];
         world1 = creator.world;
         world.setContactListener(new WorldContactListener());
-
 //        music = MarioBros.manager.get("audio/music/mario_music.ogg", Music.class);
 //        music.setLooping(true);
 //        music.setVolume(0.3f);
@@ -127,6 +128,15 @@ public class PlayScreen implements Screen {
             fdef.shape = shape;
             body[cnt].createFixture(fdef);
             cnt++;
+        }
+        for(MapObject object : map.getLayers().get("goldenPlank").getObjects()){
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            bdef.type = BodyDef.BodyType.StaticBody;
+            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+            goldenPlank = world1.createBody(bdef);
+            shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
+            fdef.shape = shape;
+            goldenPlank.createFixture(fdef);
         }
     }
 
@@ -235,7 +245,9 @@ public class PlayScreen implements Screen {
             }
             cnt++;
         }
-
+        MapObject object = map.getLayers().get("goldenPlank").getObjects().get(0);
+        Rectangle rect = ((RectangleMapObject) object).getRectangle();
+        if(player.b2body.getPosition().x>=rect.x/MarioBros.PPM && player.b2body.getPosition().x <= (rect.x+rect.width)/MarioBros.PPM && player.b2body.getPosition().y>= (rect.y+rect.height)/MarioBros.PPM && player.b2body.getPosition().y<=(rect.y+rect.height+8)/MarioBros.PPM)finish = true;
 
         //update our gamecam with correct coordinates after changes
         gamecam.update();
@@ -271,7 +283,7 @@ public class PlayScreen implements Screen {
         //render our game map
         renderer.render();
         //renderer our Box2DDebugLines
-        b2dr.render(world, gamecam.combined);
+//        b2dr.render(world, gamecam.combined);
 
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
@@ -290,6 +302,10 @@ public class PlayScreen implements Screen {
             game.setScreen(new GameOverScreen(game));
             dispose();
         }
+        if(finish()){
+            game.setScreen(new FinishScreen(game));
+            dispose();
+        }
 //        System.out.println(player.b2body.getPosition().toString());
 
     }
@@ -300,7 +316,12 @@ public class PlayScreen implements Screen {
         }
         return false;
     }
-
+    public boolean finish(){
+        if(finish && !player.isDead()){
+            return true;
+        }
+        return false;
+    }
     @Override
     public void resize(int width, int height) {
         //updated our game viewport

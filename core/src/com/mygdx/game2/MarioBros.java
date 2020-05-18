@@ -50,6 +50,7 @@ public class MarioBros extends Game {
 //
 //		manager.finishLoading();
 
+//		setScreen(new PlayScreen(this));
 		setScreen(new PlayScreen(this));
 	}
 
