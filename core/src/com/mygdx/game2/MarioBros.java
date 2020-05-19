@@ -8,8 +8,8 @@ import com.mygdx.game2.Screens.PlayScreen;
 
 public class MarioBros extends Game {
 	//Virtual Screen size and Box2D Scale(Pixels Per Meter)
-	public static final int V_WIDTH = 400*2;
-	public static final int V_HEIGHT = 200*2;
+	public static final int V_WIDTH = 800;
+	public static final int V_HEIGHT = 400;
 	public static final float PPM = 100;
 
 	//Box2D Collision Bits
@@ -47,7 +47,7 @@ public class MarioBros extends Game {
 //		manager.load("audio/sounds/powerdown.wav", Sound.class);
 //		manager.load("audio/sounds/stomp.wav", Sound.class);
 //		manager.load("audio/sounds/mariodie.wav", Sound.class);
-//
+//		manager.load("Background/Yellow.png", Texture.class);
 //		manager.finishLoading();
 
 //		setScreen(new PlayScreen(this));

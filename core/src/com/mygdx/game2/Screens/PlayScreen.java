@@ -85,9 +85,10 @@ public class PlayScreen implements Screen {
 
     private Viewport viewport;
     private Stage stage;
-
+    Sprite sprite;
 
     public PlayScreen(final MarioBros game) {
+        sprite = new Sprite(new Texture("Background/Yellow.png"));
         body = new ArrayList<>();
         goldenPlank = new ArrayList<>();
         Scanner s = new Scanner("worldNumber");
@@ -325,7 +326,7 @@ public class PlayScreen implements Screen {
 //        fill background
 //        System.out.println(player.b2body.getPosition().toString());
         player.setCenter(player.b2body.getPosition().x, (float) (player.b2body.getPosition().y + 0.09));
-        spriteDraw(new Sprite(new Texture("Background/Yellow.png")));
+        spriteDraw(sprite);
 
         if (player.b2body.getPosition().y < 0) {
             player.die();
