@@ -21,6 +21,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -33,7 +35,12 @@ import com.mygdx.game2.Sprites.Items.Mushroom;
 import com.mygdx.game2.Sprites.Mario;
 import com.mygdx.game2.Tools.B2WorldCreator;
 import com.mygdx.game2.Tools.WorldContactListener;
+import com.mygdx.game2.values;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
@@ -47,7 +54,6 @@ public class PlayScreen implements Screen {
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
-    private int count = 3;
     //Tiled map variables
     private TmxMapLoader maploader;
     private TiledMap map;
@@ -66,16 +72,28 @@ public class PlayScreen implements Screen {
     private Music music;
 
     private Array<Item> items;
-    private LinkedBlockingQueue<ItemDef> itemsToSpawn;
 
+    ImageButton imageButton;
+
+    private LinkedBlockingQueue<ItemDef> itemsToSpawn;
     BodyDef bdef;
-    Body body[];
-    Body goldenPlank;
+    ArrayList<Body> body;
+    ArrayList<Body> goldenPlank;
     PolygonShape shape;
     FixtureDef fdef;
 
 
-    public PlayScreen(MarioBros game) {
+    private Viewport viewport;
+    private Stage stage;
+
+
+    public PlayScreen(final MarioBros game) {
+        body = new ArrayList<>();
+        goldenPlank = new ArrayList<>();
+        Scanner s = new Scanner("worldNumber");
+        while (s.hasNextInt())
+            values.worldNumber = s.nextInt();
+        s.close();
         finish = false;
         batch = new SpriteBatch();
 
@@ -93,7 +111,21 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("maps/map.tmx");
+        switch (values.worldNumber){
+            default:
+                values.worldNumber=1;
+            case 1:
+                map = maploader.load("maps/map1.tmx");
+                break;
+            case 2:
+                map = maploader.load("maps/map2.tmx");
+                break;
+            case 3:
+                map = maploader.load("maps/map3.tmx");
+                break;
+
+        }
+
 
         renderer = new OrthogonalTiledMapRenderer(map, 1 / MarioBros.PPM);
         //initially set our gamcam to be centered correctly at the start of of map
@@ -108,13 +140,13 @@ public class PlayScreen implements Screen {
         bdef = creator.bdef;
         shape = creator.shape;
         fdef = creator.fdef;
-        body = new Body[count];
+        body = new ArrayList<Body>();
         world1 = creator.world;
         world.setContactListener(new WorldContactListener());
 //        music = MarioBros.manager.get("audio/music/mario_music.ogg", Music.class);
 //        music.setLooping(true);
 //        music.setVolume(0.3f);
-        //music.play();
+//        music.play();
 
         items = new Array<Item>();
         itemsToSpawn = new LinkedBlockingQueue<ItemDef>();
@@ -123,21 +155,37 @@ public class PlayScreen implements Screen {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
-            body[cnt] = world1.createBody(bdef);
+            body.add(world1.createBody(bdef));
             shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
             fdef.shape = shape;
-            body[cnt].createFixture(fdef);
+            body.get(cnt).createFixture(fdef);
             cnt++;
         }
+        cnt = 0;
         for(MapObject object : map.getLayers().get("goldenPlank").getObjects()){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
-            goldenPlank = world1.createBody(bdef);
+            goldenPlank.add(world1.createBody(bdef));
             shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
             fdef.shape = shape;
-            goldenPlank.createFixture(fdef);
+            goldenPlank.get(cnt).createFixture(fdef);
+            cnt++;
         }
+//        viewport = new FitViewport(MarioBros.V_WIDTH, MarioBros.V_HEIGHT, new OrthographicCamera());
+//        stage = new Stage(viewport, ((MarioBros) game).batch);
+//        imageButton = new ImageButton(new TextureRegionDrawable(new Texture("Menu/Buttons/Restart.png")));
+//        imageButton.setSize(100,100);
+//        imageButton.setPosition(125,Gdx.graphics.getHeight()-125);
+//        imageButton.addListener(new InputListener(){
+//            @Override
+//            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+//                game.setScreen(new PlayScreen(game));
+//                dispose();
+//                return false;
+//            }
+//        });
+//        stage.addActor(imageButton);
     }
 
     public void spawnItem(ItemDef idef) {
@@ -239,15 +287,20 @@ public class PlayScreen implements Screen {
         for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             if (!((player.b2body.getPosition().y) - 1 / MarioBros.PPM > (rect.y + rect.height) / MarioBros.PPM)) {
-                body[cnt].setActive(false);
-            } else if (!body[cnt].isActive()) {
-                body[cnt].setActive(true);
+                body.get(cnt).setActive(false);
+            } else if (!body.get(cnt).isActive()) {
+                body.get(cnt).setActive(true);
             }
             cnt++;
         }
-        MapObject object = map.getLayers().get("goldenPlank").getObjects().get(0);
-        Rectangle rect = ((RectangleMapObject) object).getRectangle();
-        if(player.b2body.getPosition().x>=rect.x/MarioBros.PPM && player.b2body.getPosition().x <= (rect.x+rect.width)/MarioBros.PPM && player.b2body.getPosition().y>= (rect.y+rect.height)/MarioBros.PPM && player.b2body.getPosition().y<=(rect.y+rect.height+8)/MarioBros.PPM)finish = true;
+
+
+
+        for (MapObject object : map.getLayers().get("goldenPlank").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            if(player.b2body.getPosition().x>=rect.x/MarioBros.PPM && player.b2body.getPosition().x <= (rect.x+rect.width)/MarioBros.PPM && player.b2body.getPosition().y>= (rect.y+rect.height)/MarioBros.PPM && player.b2body.getPosition().y<=(rect.y+rect.height+8)/MarioBros.PPM)finish = true;
+
+        }
 
         //update our gamecam with correct coordinates after changes
         gamecam.update();
@@ -269,7 +322,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        //fill background
+//        fill background
 //        System.out.println(player.b2body.getPosition().toString());
         player.setCenter(player.b2body.getPosition().x, (float) (player.b2body.getPosition().y + 0.09));
         spriteDraw(new Sprite(new Texture("Background/Yellow.png")));
@@ -297,16 +350,17 @@ public class PlayScreen implements Screen {
         //Set our batch to now draw what the Hud camera sees.
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
-
         if (gameOver()) {
             game.setScreen(new GameOverScreen(game));
             dispose();
         }
         if(finish()){
-            game.setScreen(new FinishScreen(game));
+            game.setScreen(new PlayScreen(game));
             dispose();
         }
-//        System.out.println(player.b2body.getPosition().toString());
+
+//        stage.draw();
+//        stage.act(delta);
 
     }
 
@@ -318,6 +372,14 @@ public class PlayScreen implements Screen {
     }
     public boolean finish(){
         if(finish && !player.isDead()){
+            values.worldNumber++;
+            try {
+                FileWriter writer = new FileWriter("MyFile.txt", true);
+                writer.write(values.worldNumber);
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return true;
         }
         return false;
@@ -355,7 +417,6 @@ public class PlayScreen implements Screen {
     @Override
     public void dispose() {
         //dispose of all our opened resources
-        map.dispose();
         map.dispose();
         world.dispose();
         b2dr.dispose();

@@ -31,7 +31,6 @@ public class FinishScreen implements Screen {
 
         Label to_be_continued = new Label("To be continued", font);
         to_be_continued.setBounds(650,50,0,0);
-
         stage.addActor(to_be_continued);
     }
 
@@ -53,10 +52,10 @@ public class FinishScreen implements Screen {
 
     @Override
     public void render(float delta) {
-//        if(Gdx.input.justTouched()) {
-//            game.setScreen(new PlayScreen((MarioBros) game));
-//            dispose();
-//        }
+        if(Gdx.input.justTouched()) {
+            game.setScreen(new PlayScreen((MarioBros) game));
+            dispose();
+        }
         spriteDraw(new Sprite(new Texture("Background/Brown.png")),batch);
         stage.draw();
     }

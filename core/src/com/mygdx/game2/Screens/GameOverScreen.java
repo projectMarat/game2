@@ -34,10 +34,18 @@ public class GameOverScreen implements Screen {
 
         Label gameOverLabel = new Label("GAME OVER", font);
         Label playAgainLabel = new Label("Click to Play Again", font);
-
         table.add(gameOverLabel).expandX();
         table.row();
         table.add(playAgainLabel).expandX().padTop(10f);
+//        table.addListener(new InputListener() {
+//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+//
+//                return true;
+//            }
+//            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+//
+//            }
+//        });
 
         stage.addActor(table);
     }
