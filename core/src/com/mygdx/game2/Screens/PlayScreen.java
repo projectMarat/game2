@@ -89,6 +89,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(final MarioBros game) {
         sprite = new Sprite(new Texture("Background/Yellow.png"));
+//        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getWidth());
         body = new ArrayList<>();
         goldenPlank = new ArrayList<>();
         Scanner s = new Scanner("worldNumber");
@@ -312,8 +313,8 @@ public class PlayScreen implements Screen {
 
     public void spriteDraw(Sprite sprite) {
         batch.begin();
-        for (int i = 0; i < Gdx.graphics.getHeight(); i += 64) {
-            for (int j = 0; j < Gdx.graphics.getWidth(); j += 64) {
+        for (int i = 0; i < Gdx.graphics.getHeight()+64; i += 64) {
+            for (int j = 0; j < Gdx.graphics.getWidth()+64; j += 64) {
                 sprite.setPosition(j, i);
                 sprite.draw(batch);
             }
