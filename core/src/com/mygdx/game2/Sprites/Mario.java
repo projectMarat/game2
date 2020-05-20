@@ -233,7 +233,10 @@ public class Mario extends Sprite {
 
         if (!isDead()) {
             values.lives--;
-            if(values.lives<=0)values.worldNumber-=1;
+            if(values.lives<=0) {
+                values.worldNumber-=1;
+                values.lives = 3;
+            }
 //            MarioBros.manager.get("audio/music/mario_music.ogg", Music.class).stop();
 //            MarioBros.manager.get("audio/sounds/mariodie.wav", Sound.class).play();
             marioIsDead = true;
