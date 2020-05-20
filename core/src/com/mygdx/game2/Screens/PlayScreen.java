@@ -113,20 +113,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        switch (values.worldNumber){
-            default:
-                values.worldNumber=1;
-            case 1:
-                map = maploader.load("maps/map1.tmx");
-                break;
-            case 2:
-                map = maploader.load("maps/map2.tmx");
-                break;
-            case 3:
-                map = maploader.load("maps/map3.tmx");
-                break;
-
-        }
+        map = maploader.load("maps/map"+values.worldNumber+".tmx");
 
 
         renderer = new OrthogonalTiledMapRenderer(map, 1 / MarioBros.PPM);

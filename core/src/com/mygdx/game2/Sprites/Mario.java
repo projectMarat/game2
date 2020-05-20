@@ -21,7 +21,7 @@ import com.mygdx.game2.Screens.PlayScreen;
 import com.mygdx.game2.Sprites.Enemies.Enemy;
 import com.mygdx.game2.Sprites.Enemies.Turtle;
 import com.mygdx.game2.Sprites.Other.FireBall;
-
+import com.mygdx.game2.values;
 
 
 public class Mario extends Sprite {
@@ -232,7 +232,8 @@ public class Mario extends Sprite {
     public void die() {
 
         if (!isDead()) {
-
+            values.lives--;
+            if(values.lives<=0)values.worldNumber-=1;
 //            MarioBros.manager.get("audio/music/mario_music.ogg", Music.class).stop();
 //            MarioBros.manager.get("audio/sounds/mariodie.wav", Sound.class).play();
             marioIsDead = true;
