@@ -95,7 +95,6 @@
   <object id="25" x="640" y="144" width="48" height="5.09091"/>
  </objectgroup>
  <objectgroup id="3" name="killers">
-  <object id="29" x="480" y="328.75" width="16" height="7.25"/>
   <object id="30" x="512" y="328.5" width="15.75" height="7.5"/>
   <object id="31" x="576" y="232.727" width="15.8182" height="7.27273"/>
   <object id="33" x="624" y="88.875" width="16.25" height="7.125"/>
