@@ -211,9 +211,7 @@ public class PlayScreen implements Screen {
     public void handleInput(float dt) {
         //control our player using immediate impulses
         if (player.currentState != Mario.State.DEAD) {
-            if (IsJumpRight() && IsJumpLeft())
-                player.fire();
-            else if (IsJumpLeft() || IsJumpRight())
+            if (IsJumpLeft() || IsJumpRight())
                 player.jump();
             if (IsRight() && player.b2body.getLinearVelocity().x <= 2)
                 player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
