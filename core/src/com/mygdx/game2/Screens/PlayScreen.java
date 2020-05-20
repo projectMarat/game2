@@ -113,7 +113,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        if(values.worldNumber>values.maxWorld)values.worldNumber=1;
+        if(values.worldNumber>values.maxWorld || values.worldNumber<1)values.worldNumber=1;
         map = maploader.load("maps/map"+values.worldNumber+".tmx");
 
 
