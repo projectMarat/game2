@@ -153,27 +153,33 @@ public class PlayScreen implements Screen {
         items = new Array<Item>();
         itemsToSpawn = new LinkedBlockingQueue<ItemDef>();
         int cnt = 0;
-        for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
-            body.add(world1.createBody(bdef));
-            shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
-            fdef.shape = shape;
-            body.get(cnt).createFixture(fdef);
-            cnt++;
-        }
-        cnt = 0;
-        for(MapObject object : map.getLayers().get("goldenPlank").getObjects()){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
-            goldenPlank.add(world1.createBody(bdef));
-            shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
-            fdef.shape = shape;
-            goldenPlank.get(cnt).createFixture(fdef);
-            cnt++;
-        }
+        try {
+            for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                bdef.type = BodyDef.BodyType.StaticBody;
+                bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+                body.add(world1.createBody(bdef));
+                shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
+                fdef.shape = shape;
+                body.get(cnt).createFixture(fdef);
+                cnt++;
+            }
+
+        }catch (NullPointerException e){}
+        try {
+            cnt = 0;
+            for(MapObject object : map.getLayers().get("goldenPlank").getObjects()){
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                bdef.type = BodyDef.BodyType.StaticBody;
+                bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+                goldenPlank.add(world1.createBody(bdef));
+                shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
+                fdef.shape = shape;
+                goldenPlank.get(cnt).createFixture(fdef);
+                cnt++;
+            }
+        }catch (NullPointerException e){}
+
 //        viewport = new FitViewport(MarioBros.V_WIDTH, MarioBros.V_HEIGHT, new OrthographicCamera());
 //        stage = new Stage(viewport, ((MarioBros) game).batch);
 //        imageButton = new ImageButton(new TextureRegionDrawable(new Texture("Menu/Buttons/Restart.png")));
@@ -286,15 +292,18 @@ public class PlayScreen implements Screen {
 
         }
         int cnt = 0;
-        for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            if (!((player.b2body.getPosition().y) - 1 / MarioBros.PPM > (rect.y + rect.height) / MarioBros.PPM)) {
-                body.get(cnt).setActive(false);
-            } else if (!body.get(cnt).isActive()) {
-                body.get(cnt).setActive(true);
+        try {
+            for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                if (!((player.b2body.getPosition().y) - 1 / MarioBros.PPM > (rect.y + rect.height) / MarioBros.PPM)) {
+                    body.get(cnt).setActive(false);
+                } else if (!body.get(cnt).isActive()) {
+                    body.get(cnt).setActive(true);
+                }
+                cnt++;
             }
-            cnt++;
-        }
+        }catch (NullPointerException e){}
+
 
 
 
@@ -303,7 +312,10 @@ public class PlayScreen implements Screen {
             if(player.b2body.getPosition().x>=rect.x/MarioBros.PPM && player.b2body.getPosition().x <= (rect.x+rect.width)/MarioBros.PPM && player.b2body.getPosition().y>= (rect.y+rect.height)/MarioBros.PPM && player.b2body.getPosition().y<=(rect.y+rect.height+8)/MarioBros.PPM)finish = true;
 
         }
-
+        for (MapObject object : map.getLayers().get("killers").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+            if(rect.contains(player.b2body.getPosition().x*MarioBros.PPM,player.b2body.getPosition().y*MarioBros.PPM))player.die();
+        }
         //update our gamecam with correct coordinates after changes
         gamecam.update();
         //tell our renderer to draw only what our camera can see in our game world.
@@ -376,7 +388,7 @@ public class PlayScreen implements Screen {
         if(finish && !player.isDead()){
             values.worldNumber++;
             try {
-                FileWriter writer = new FileWriter("MyFile.txt", true);
+                FileWriter writer = new FileWriter("worldNumber.txt", true);
                 writer.write(values.worldNumber);
                 writer.close();
             } catch (IOException e) {
