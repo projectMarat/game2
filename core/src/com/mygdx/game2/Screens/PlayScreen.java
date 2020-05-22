@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -22,7 +23,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -73,7 +73,7 @@ public class PlayScreen implements Screen {
 
     private Array<Item> items;
 
-    ImageButton imageButton;
+
 
     private LinkedBlockingQueue<ItemDef> itemsToSpawn;
     BodyDef bdef;
@@ -86,8 +86,10 @@ public class PlayScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
     Sprite sprite;
+    TextureRegion heart[][];
 
     public PlayScreen(final MarioBros game) {
+        heart = new TextureRegion().split(new Texture("mini-heart.png"),new Texture("mini-heart.png").getWidth()/2, new Texture("mini-heart.png").getHeight());
         sprite = new Sprite(new Texture("Background/Yellow.png"));
 //        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getWidth());
         body = new ArrayList<>();
@@ -350,6 +352,16 @@ public class PlayScreen implements Screen {
         //Set our batch to now draw what the Hud camera sees.
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+        for (int i = 0; i < 3; i++){
+            game.batch.begin();
+            game.batch.draw(heart[0][1], (float) (0+i*heart[0][1].getRegionWidth()*(Gdx.graphics.getWidth()/689.92)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
+            game.batch.end();
+        }
+        for (int i = 0; i < values.lives; i++) {
+            game.batch.begin();
+            game.batch.draw(heart[0][0], (float) (0+i*heart[0][0].getRegionWidth()*(Gdx.graphics.getWidth()/689.92)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
+            game.batch.end();
+        }
         if (gameOver()) {
             game.setScreen(new GameOverScreen(game));
             dispose();
