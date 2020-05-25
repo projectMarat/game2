@@ -37,6 +37,8 @@ import com.mygdx.game2.Tools.B2WorldCreator;
 import com.mygdx.game2.Tools.WorldContactListener;
 import com.mygdx.game2.values;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,10 +96,7 @@ public class PlayScreen implements Screen {
 //        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getWidth());
         body = new ArrayList<>();
         goldenPlank = new ArrayList<>();
-        Scanner s = new Scanner("worldNumber");
-        while (s.hasNextInt())
-            values.worldNumber = s.nextInt();
-        s.close();
+
         finish = false;
         batch = new SpriteBatch();
 
@@ -115,6 +114,16 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
+
+        try {
+            Scanner scan = new Scanner(new FileReader("maps/worldNumber.txt"));
+            int a = scan.nextInt();
+            values.lives = a%10;
+            values.worldNumber = a/10%10;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if(values.worldNumber>values.maxWorld || values.worldNumber<1)values.worldNumber=1;
         map = maploader.load("maps/map"+values.worldNumber+".tmx");
 
@@ -184,6 +193,9 @@ public class PlayScreen implements Screen {
 //            }
 //        });
 //        stage.addActor(imageButton);
+        if(values.lives<=0){
+            values.lives=3;
+        }
     }
 
     public void spawnItem(ItemDef idef) {
@@ -354,12 +366,12 @@ public class PlayScreen implements Screen {
         hud.stage.draw();
         for (int i = 0; i < 3; i++){
             game.batch.begin();
-            game.batch.draw(heart[0][1], (float) (0+i*heart[0][1].getRegionWidth()*(Gdx.graphics.getWidth()/689.92)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
+            game.batch.draw(heart[0][1], (float) (0+i*heart[0][1].getRegionWidth()*(Gdx.graphics.getWidth()/650)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][1].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
             game.batch.end();
         }
         for (int i = 0; i < values.lives; i++) {
             game.batch.begin();
-            game.batch.draw(heart[0][0], (float) (0+i*heart[0][0].getRegionWidth()*(Gdx.graphics.getWidth()/689.92)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
+            game.batch.draw(heart[0][0], (float) (0+i*heart[0][0].getRegionWidth()*(Gdx.graphics.getWidth()/650)), (float) (Gdx.graphics.getHeight()/3.1), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92), (float) (heart[0][0].getRegionHeight()*Gdx.graphics.getWidth()/689.92));
             game.batch.end();
         }
         if (gameOver()) {
@@ -386,8 +398,8 @@ public class PlayScreen implements Screen {
         if(finish && !player.isDead()){
             values.worldNumber++;
             try {
-                FileWriter writer = new FileWriter("worldNumber.txt", true);
-                writer.write(values.worldNumber);
+                FileWriter writer = new FileWriter("maps/worldNumber.txt", true);
+                writer.write(values.worldNumber+""+values.lives);
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();

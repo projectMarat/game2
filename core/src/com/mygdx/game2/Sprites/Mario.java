@@ -23,6 +23,9 @@ import com.mygdx.game2.Sprites.Enemies.Turtle;
 import com.mygdx.game2.Sprites.Other.FireBall;
 import com.mygdx.game2.values;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class Mario extends Sprite {
     public enum State { FALLING, JUMPING, STANDING, RUNNING, GROWING, DEAD };
@@ -235,7 +238,15 @@ public class Mario extends Sprite {
             values.lives--;
             if(values.lives<=0) {
                 values.worldNumber-=1;
-                values.lives = 3;
+                values.lives=3;
+                try {
+                    FileWriter writer = new FileWriter("maps/worldNumber.txt", true);
+                    writer.write(values.worldNumber+""+values.lives);
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
 //            MarioBros.manager.get("audio/music/mario_music.ogg", Music.class).stop();
 //            MarioBros.manager.get("audio/sounds/mariodie.wav", Sound.class).play();

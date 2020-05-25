@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game2.MarioBros;
+import com.mygdx.game2.values;
 
 
 public class GameOverScreen implements Screen {
@@ -27,25 +28,20 @@ public class GameOverScreen implements Screen {
         stage = new Stage(viewport, ((MarioBros) game).batch);
 
         Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
-
+        Label gameOverLabel = new Label("GAME OVER", font);
+        Label playAgainLabel = new Label("Click to Play Again", font);
         Table table = new Table();
         table.center();
         table.setFillParent(true);
 
-        Label gameOverLabel = new Label("GAME OVER", font);
-        Label playAgainLabel = new Label("Click to Play Again", font);
+        if(values.lives==0){
+            gameOverLabel = new Label("GAME OVER, YOUR LIVES ENDED UP. YOU WILL RESPAWN ON PREV LEVEL", font);
+            playAgainLabel = new Label("Click to Play Go Back",font);
+        }
+
         table.add(gameOverLabel).expandX();
         table.row();
         table.add(playAgainLabel).expandX().padTop(10f);
-//        table.addListener(new InputListener() {
-//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//
-//                return true;
-//            }
-//            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//
-//            }
-//        });
 
         stage.addActor(table);
     }
