@@ -238,7 +238,6 @@ public class Mario extends Sprite {
             values.lives--;
             if(values.lives<=0) {
                 values.worldNumber-=1;
-                values.lives=3;
                 try {
                     FileWriter writer = new FileWriter("maps/worldNumber.txt", true);
                     writer.write(values.worldNumber+""+values.lives);
