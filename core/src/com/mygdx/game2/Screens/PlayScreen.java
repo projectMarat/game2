@@ -100,19 +100,13 @@ public class PlayScreen implements Screen {
         finish = false;
         batch = new SpriteBatch();
 
-//        atlas = new TextureAtlas("Mario_and_Enemies.pack");
-
         this.game = game;
-        //create cam used to follow mario through cam world
         gamecam = new OrthographicCamera();
 
-        //create a FitViewport to maintain virtual aspect ratio despite screen size
         gamePort = new FitViewport(MarioBros.V_WIDTH / MarioBros.PPM, MarioBros.V_HEIGHT / MarioBros.PPM, gamecam);
 
-        //create our game HUD for scores/timers/level info
         hud = new Hud(game.batch);
 
-        //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
 
         try {
@@ -129,25 +123,17 @@ public class PlayScreen implements Screen {
 
 
         renderer = new OrthogonalTiledMapRenderer(map, 1 / MarioBros.PPM);
-        //initially set our gamcam to be centered correctly at the start of of map
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
-        //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
         world = new World(new Vector2(0, -10), true);
-        //allows for debug lines of our box2d world.
         b2dr = new Box2DDebugRenderer();
         player = new Mario(this);
         creator = new B2WorldCreator(this, player);
-        //create mario in our game world
         bdef = creator.bdef;
         shape = creator.shape;
         fdef = creator.fdef;
         body = new ArrayList<Body>();
         world1 = creator.world;
         world.setContactListener(new WorldContactListener());
-//        music = MarioBros.manager.get("audio/music/mario_music.ogg", Music.class);
-//        music.setLooping(true);
-//        music.setVolume(0.3f);
-//        music.play();
 
         items = new Array<Item>();
         itemsToSpawn = new LinkedBlockingQueue<ItemDef>();
@@ -224,7 +210,6 @@ public class PlayScreen implements Screen {
     }
 
     public void handleInput(float dt) {
-        //control our player using immediate impulses
         if (player.currentState != Mario.State.DEAD) {
             if (IsJumpLeft() || IsJumpRight())
                 player.jump();
@@ -233,7 +218,6 @@ public class PlayScreen implements Screen {
             if (IsLeft() && player.b2body.getLinearVelocity().x >= -2)
                 player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
         }
-        //detecting input
     }
 
     public boolean IsRight() {
@@ -261,11 +245,9 @@ public class PlayScreen implements Screen {
 
     public void update(float dt) {
 
-        //handle user input first
         handleInput(dt);
         handleSpawningItems();
 
-        //takes 1 step in the physics simulation(60 times per second)
         world.step(1 / 60f, 6, 2);
 
         player.update(dt);
@@ -282,9 +264,7 @@ public class PlayScreen implements Screen {
 
         hud.update(dt);
 
-        //attach our gamecam to our players.x coordinate
         if (player.currentState != Mario.State.DEAD) {
-//            if()
             gamecam.position.x = player.b2body.getPosition().x;
             gamecam.position.y = player.b2body.getPosition().y;
             if (gamecam.position.y < gamePort.getWorldHeight() / 2)
@@ -316,9 +296,7 @@ public class PlayScreen implements Screen {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             if(rect.contains(player.b2body.getPosition().x*MarioBros.PPM,player.b2body.getPosition().y*MarioBros.PPM))player.die();
         }
-        //update our gamecam with correct coordinates after changes
         gamecam.update();
-        //tell our renderer to draw only what our camera can see in our game world.
         renderer.setView(gamecam);
 
     }
@@ -336,21 +314,15 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-//        fill background
-//        System.out.println(player.b2body.getPosition().toString());
         player.setCenter(player.b2body.getPosition().x, (float) (player.b2body.getPosition().y + 0.09));
         spriteDraw(sprite);
 
         if (player.b2body.getPosition().y < 0) {
             player.die();
         }
-        //separate our update logic from render
         update(delta);
 
-        //render our game map
         renderer.render();
-        //renderer our Box2DDebugLines
-//        b2dr.render(world, gamecam.combined);
 
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
@@ -361,7 +333,6 @@ public class PlayScreen implements Screen {
             item.draw(game.batch);
         game.batch.end();
 
-        //Set our batch to now draw what the Hud camera sees.
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
         for (int i = 0; i < 3; i++){
@@ -383,8 +354,6 @@ public class PlayScreen implements Screen {
             dispose();
         }
 
-//        stage.draw();
-//        stage.act(delta);
 
     }
 
@@ -410,7 +379,6 @@ public class PlayScreen implements Screen {
     }
     @Override
     public void resize(int width, int height) {
-        //updated our game viewport
         gamePort.update(width, height);
 
     }
@@ -440,7 +408,6 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-        //dispose of all our opened resources
         map.dispose();
         world.dispose();
         b2dr.dispose();

@@ -73,7 +73,6 @@ public class Goomba extends com.mygdx.game2.Sprites.Enemies.Enemy
         fdef.shape = shape;
         b2body.createFixture(fdef).setUserData(this);
 
-        //Create the Head here:
         PolygonShape head = new PolygonShape();
         Vector2[] vertice = new Vector2[4];
         vertice[0] = new Vector2(-5, 8).scl(1 / MarioBros.PPM);
@@ -99,7 +98,6 @@ public class Goomba extends com.mygdx.game2.Sprites.Enemies.Enemy
     @Override
     public void hitOnHead(Mario mario) {
         setToDestroy = true;
-//        MarioBros.manager.get("audio/sounds/stomp.wav", Sound.class).play();
     }
 
     @Override

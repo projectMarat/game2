@@ -31,13 +31,11 @@ public class B2WorldCreator {
         this.player = player;
         world = screen.getWorld();
         TiledMap map = screen.getMap();
-        //create body and fixture variables
         bdef = new BodyDef();
         shape = new PolygonShape();
         fdef = new FixtureDef();
 
 
-        //create ground bodies/fixtures
         for(MapObject object : map.getLayers().get("Ground").getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -50,7 +48,6 @@ public class B2WorldCreator {
             body.createFixture(fdef);
         }
 
-        //create pipe bodies/fixtures
 //        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
 //            Rectangle rect = ((RectangleMapObject) object).getRectangle();
 //
