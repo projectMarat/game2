@@ -37,12 +37,9 @@ import com.mygdx.game2.Tools.B2WorldCreator;
 import com.mygdx.game2.Tools.WorldContactListener;
 import com.mygdx.game2.values;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
@@ -79,8 +76,9 @@ public class PlayScreen implements Screen {
 
     private LinkedBlockingQueue<ItemDef> itemsToSpawn;
     BodyDef bdef;
-    ArrayList<Body> body;
+    ArrayList<Body> metalPlanks;
     ArrayList<Body> goldenPlank;
+    ArrayList<Body> enemies;
     PolygonShape shape;
     FixtureDef fdef;
 
@@ -94,9 +92,9 @@ public class PlayScreen implements Screen {
         heart = new TextureRegion().split(new Texture("mini-heart.png"),new Texture("mini-heart.png").getWidth()/2, new Texture("mini-heart.png").getHeight());
         sprite = new Sprite(new Texture("Background/Yellow.png"));
 //        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getWidth());
-        body = new ArrayList<>();
+        metalPlanks = new ArrayList<>();
         goldenPlank = new ArrayList<>();
-
+        enemies = new ArrayList<>();
         finish = false;
         batch = new SpriteBatch();
 
@@ -109,14 +107,14 @@ public class PlayScreen implements Screen {
 
         maploader = new TmxMapLoader();
 
-        try {
+       /* try {
             Scanner scan = new Scanner(new FileReader("maps/worldNumber.txt"));
             int a = scan.nextInt();
             values.lives = a%10;
             values.worldNumber = a/10%10;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
+        }*/
 
         if(values.worldNumber>values.maxWorld || values.worldNumber<1)values.worldNumber=1;
         map = maploader.load("maps/map"+values.worldNumber+".tmx");
@@ -131,7 +129,6 @@ public class PlayScreen implements Screen {
         bdef = creator.bdef;
         shape = creator.shape;
         fdef = creator.fdef;
-        body = new ArrayList<Body>();
         world1 = creator.world;
         world.setContactListener(new WorldContactListener());
 
@@ -143,17 +140,17 @@ public class PlayScreen implements Screen {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 bdef.type = BodyDef.BodyType.StaticBody;
                 bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
-                body.add(world1.createBody(bdef));
+                metalPlanks.add(world1.createBody(bdef));
                 shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
                 fdef.shape = shape;
-                body.get(cnt).createFixture(fdef);
+                metalPlanks.get(cnt).createFixture(fdef);
                 cnt++;
             }
 
-        }catch (NullPointerException e){}
+        }catch (NullPointerException e){e.printStackTrace();}
         try {
             cnt = 0;
-            for(MapObject object : map.getLayers().get("goldenPlank").getObjects()){
+            for(MapObject object : map.getLayers().get("goldenPlank").getObjects().getByType(RectangleMapObject.class)){
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 bdef.type = BodyDef.BodyType.StaticBody;
                 bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
@@ -163,7 +160,20 @@ public class PlayScreen implements Screen {
                 goldenPlank.get(cnt).createFixture(fdef);
                 cnt++;
             }
-        }catch (NullPointerException e){}
+        }catch (NullPointerException e){e.printStackTrace();}
+        try{
+            cnt = 0;
+            for(MapObject object : map.getLayers().get("enemy").getObjects().getByType(RectangleMapObject.class)){
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                bdef.type = BodyDef.BodyType.DynamicBody;
+                bdef.position.set((rect.getX() + rect.getWidth() / 2) / MarioBros.PPM, (rect.getY() + rect.getHeight() / 2) / MarioBros.PPM);
+                enemies.add(world1.createBody(bdef));
+                shape.setAsBox(rect.getWidth() / 2 / MarioBros.PPM, rect.getHeight() / 2 / MarioBros.PPM);
+                fdef.shape = shape;
+                enemies.get(cnt).createFixture(fdef);
+                cnt++;
+            }
+        }catch (NullPointerException e){e.printStackTrace();}
 
 //        viewport = new FitViewport(MarioBros.V_WIDTH, MarioBros.V_HEIGHT, new OrthographicCamera());
 //        stage = new Stage(viewport, ((MarioBros) game).batch);
@@ -211,7 +221,7 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt) {
         if (player.currentState != Mario.State.DEAD) {
-            if (IsJumpLeft() || IsJumpRight())
+            if (IsJumpLeft() || IsJumpRight() || Gdx.input.isKeyPressed(28))
                 player.jump();
             if (IsRight() && player.b2body.getLinearVelocity().x <= 2)
                 player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
@@ -276,9 +286,9 @@ public class PlayScreen implements Screen {
             for (MapObject object : map.getLayers().get("metalPlanks").getObjects().getByType(RectangleMapObject.class)) {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 if (!((player.b2body.getPosition().y) - 1 / MarioBros.PPM > (rect.y + rect.height) / MarioBros.PPM)) {
-                    body.get(cnt).setActive(false);
-                } else if (!body.get(cnt).isActive()) {
-                    body.get(cnt).setActive(true);
+                    metalPlanks.get(cnt).setActive(false);
+                } else if (!metalPlanks.get(cnt).isActive()) {
+                    metalPlanks.get(cnt).setActive(true);
                 }
                 cnt++;
             }
@@ -295,6 +305,9 @@ public class PlayScreen implements Screen {
         for (MapObject object : map.getLayers().get("killers").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             if(rect.contains(player.b2body.getPosition().x*MarioBros.PPM,player.b2body.getPosition().y*MarioBros.PPM))player.die();
+        }
+        for (Body enemy : enemies) {
+           if(enemy.getPosition().epsilonEquals(player.b2body.localVector))player.die();
         }
         gamecam.update();
         renderer.setView(gamecam);
