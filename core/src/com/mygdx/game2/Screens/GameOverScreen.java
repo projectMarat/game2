@@ -28,15 +28,15 @@ public class GameOverScreen implements Screen {
         stage = new Stage(viewport, ((MarioBros) game).batch);
 
         Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
-        Label gameOverLabel = new Label("GAME OVER", font);
-        Label playAgainLabel = new Label("Click to Play Again", font);
+        Label gameOverLabel = new Label("YOU DIED", font);
+        Label playAgainLabel = new Label("Click to Retry", font);
         Table table = new Table();
         table.center();
         table.setFillParent(true);
 
         if(values.lives==0){
-            gameOverLabel = new Label("GAME OVER, YOUR LIVES ENDED UP. YOU WILL RESPAWN ON PREV LEVEL", font);
-            playAgainLabel = new Label("Click to Play Go Back",font);
+            gameOverLabel = new Label("GAME OVER, YOUR LIVES ENDED UP. YOU WILL RESPAWN ON PREVIOUS LEVEL", font);
+            playAgainLabel = new Label("Click to Retry",font);
         }
 
         table.add(gameOverLabel).expandX();
