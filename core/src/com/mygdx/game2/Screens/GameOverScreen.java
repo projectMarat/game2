@@ -29,14 +29,14 @@ public class GameOverScreen implements Screen {
 
         Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
         Label gameOverLabel = new Label("YOU DIED", font);
-        Label playAgainLabel = new Label("Click to Retry", font);
+        Label playAgainLabel = new Label("Click Anywhere", font);
         Table table = new Table();
         table.center();
         table.setFillParent(true);
 
         if(values.lives==0){
-            gameOverLabel = new Label("GAME OVER, YOUR LIVES ENDED UP. YOU WILL RESPAWN ON PREVIOUS LEVEL", font);
-            playAgainLabel = new Label("Click to Retry",font);
+            gameOverLabel = new Label("YOUR LIVES ARE OVER. YOU WILL RESPAWN ON PREVIOUS LEVEL", font);
+            playAgainLabel = new Label("Click Anywhere",font);
         }
 
         table.add(gameOverLabel).expandX();
